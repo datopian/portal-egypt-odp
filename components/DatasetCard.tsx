@@ -8,7 +8,9 @@ import { deptIcon } from './deptIcons'
 // department → title → description; a divided footer with formats, resource count,
 // and an animated "View" affordance.
 export default function DatasetCard({ dataset }: { dataset: Card }) {
-  const Icon = deptIcon(dataset.namespace)
+  // Prefer the dataset's theme (group) icon — meaningful per dataset and always
+  // mapped — falling back to the publishing org, then a folder.
+  const Icon = deptIcon(dataset.groups[0]?.name || dataset.namespace)
   return (
     <Link
       href={datasetHref(dataset)}
