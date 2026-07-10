@@ -1,30 +1,13 @@
 import { Html, Head, Main, NextScript } from 'next/document'
 
-const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_TRACKING_ID ?? '';
-
 export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        {/* Google tag (gtag.js) */}
-        {GA_TRACKING_ID && (
-          <>
-            <script
-              async
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}
-            />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${GA_TRACKING_ID}', { page_path: window.location.pathname });
-                `,
-              }}
-            />
-          </>
-        )}
+        {/* Egypt Open Data Portal branding — official coat of arms (Eagle of Saladin). */}
+        <link rel="icon" type="image/svg+xml" href="/egypt-coat-of-arms.svg" />
+        <meta name="description" content="The national gateway to open government data for the Arab Republic of Egypt." />
+        <meta name="theme-color" content="#9e1b32" />
       </Head>
       <body>
         <Main />

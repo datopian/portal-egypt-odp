@@ -1,87 +1,260 @@
-import type { InferGetServerSidePropsType } from "next";
-import { SWRConfig, unstable_serialize } from "swr";
-import Layout from "@/components/_shared/Layout";
-import DatasetSearchForm from "@/components/dataset/search/DatasetSearchForm";
-import DatasetSearchFilters from "@/components/dataset/search/DatasetSearchFilters";
-import ListOfDatasets from "@/components/dataset/search/ListOfDatasets";
-import { searchDatasets } from "@/lib/queries/dataset";
-import HeroSection from "@/components/_shared/HeroSection";
-import { useTheme } from "@/components/theme/theme-provider";
+import Head from 'next/head'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useEffect, useMemo, useState } from 'react'
+import type { GetServerSideProps } from 'next'
 import {
-  SearchStateProvider,
-  useSearchState,
-} from "@/components/dataset/search/SearchContext";
-import { PackageSearchOptions } from "@portaljs/ckan";
-import { SearchPageStructuredData } from "@/components/schema/SearchPageStructuredData";
+  ckan,
+  toCard,
+  departmentCounts,
+  getAllThemes,
+  ORG_FILTER,
+  GROUP_FILTER,
+  MAX_DATASETS,
+  type DatasetCard as Card,
+  type Department,
+  type Theme,
+} from '../lib/ckan'
+import DatasetCard from '../components/DatasetCard'
 
-export async function getServerSideProps() {
-  // TODO: this doesn't work properly. It must read the params from the URL.
-  const initialRequestOption: PackageSearchOptions = {
+type Props = { datasets: Card[]; departments: Department[]; themes: Theme[]; formats: string[] }
+
+export const getServerSideProps: GetServerSideProps<Props> = async () => {
+  const { datasets } = await ckan.packageSearch({
     offset: 0,
-    limit: 10,
+    limit: MAX_DATASETS,
     tags: [],
-    groups: [],
-    orgs: [],
-    resFormat: [],
-  };
-
-  const search_result = await searchDatasets(initialRequestOption);
-
-  return {
-    props: {
-      fallback: {
-        [unstable_serialize(["package_search", initialRequestOption])]:
-          search_result,
-      },
-      searchFacets: {
-        ...search_result.search_facets,
-      },
-    },
-  };
+    orgs: ORG_FILTER,
+    groups: GROUP_FILTER,
+  })
+  const cards = datasets.map(toCard)
+  const departments = departmentCounts(cards)
+  const themes = await getAllThemes()
+  const formats = Array.from(new Set(cards.flatMap((c) => c.formats))).sort()
+  return { props: { datasets: cards, departments, themes, formats } }
 }
 
-export default function DatasetSearch({
-  fallback,
-  searchFacets,
-}: InferGetServerSidePropsType<typeof getServerSideProps>): JSX.Element {
+export default function Search({ datasets, departments, themes, formats }: Props) {
+  const router = useRouter()
+  const [q, setQ] = useState('')
+  const [dept, setDept] = useState('')
+  const [group, setGroup] = useState('')
+  const [fmts, setFmts] = useState<string[]>([])
+  const [tags, setTags] = useState<string[]>([])
+
+  // All distinct tags across the catalog, alphabetical.
+  const allTags = useMemo(
+    () => Array.from(new Set(datasets.flatMap((d) => d.tags))).sort((a, b) => a.localeCompare(b)),
+    [datasets]
+  )
+
+  // Sync filters from the URL (?q=, ?dept=, ?group=) once the router is ready, so
+  // links from the home page (hero chips, ministry & theme tiles) pre-filter the catalog.
+  useEffect(() => {
+    if (!router.isReady) return
+    setQ(typeof router.query.q === 'string' ? router.query.q : '')
+    setDept(typeof router.query.dept === 'string' ? router.query.dept : '')
+    setGroup(typeof router.query.group === 'string' ? router.query.group : '')
+  }, [router.isReady, router.query.q, router.query.dept, router.query.group])
+
+  const toggleFormat = (f: string) =>
+    setFmts((prev) => (prev.includes(f) ? prev.filter((x) => x !== f) : [...prev, f]))
+  const toggleTag = (t: string) =>
+    setTags((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]))
+
+  const results = useMemo(() => {
+    const needle = q.trim().toLowerCase()
+    return datasets.filter((d) => {
+      if (dept && d.namespace !== dept) return false
+      if (group && !d.groups.some((g) => g.name === group)) return false
+      if (fmts.length && !fmts.some((f) => d.formats.includes(f))) return false
+      if (tags.length && !tags.some((t) => d.tags.includes(t))) return false
+      if (needle) {
+        const hay = `${d.name} ${d.description} ${d.org} ${d.tags.join(' ')}`.toLowerCase()
+        if (!hay.includes(needle)) return false
+      }
+      return true
+    })
+  }, [datasets, q, dept, group, fmts, tags])
+
+  const activeDeptTitle = departments.find((d) => d.namespace === dept)?.title
+  const activeThemeTitle = themes.find((t) => t.namespace === group)?.title
+  const hasFilters = Boolean(q || dept || group || fmts.length || tags.length)
+  const clearAll = () => {
+    setQ('')
+    setDept('')
+    setGroup('')
+    setFmts([])
+    setTags([])
+    router.replace('/search', undefined, { shallow: true })
+  }
+
   return (
     <>
-      <SearchPageStructuredData />
-      <SWRConfig value={{ fallback }}>
-        <SearchStateProvider facets={searchFacets}>
-          <SearchPageContent />
-        </SearchStateProvider>
-      </SWRConfig>
+      <Head>
+        <title>Datasets — Egypt Open Data Portal</title>
+      </Head>
+
+      {/* page header band */}
+      <div className="border-b border-gray-200 bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-8">
+          <nav className="mb-3 text-sm text-gray-500">
+            <Link href="/" className="hover:text-brand">Home</Link>
+            <span className="mx-2">/</span>
+            <span className="text-gray-700">Datasets</span>
+          </nav>
+          <h1 className="text-3xl font-bold text-gray-900">Datasets</h1>
+          <p className="mt-1 text-base text-gray-500 sm:text-sm">
+            {datasets.length} datasets published by Egypt, served live from the open data catalog.
+          </p>
+        </div>
+      </div>
+
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[16rem_1fr]">
+        {/* Facet sidebar */}
+        <aside className="lg:sticky lg:top-20 lg:self-start">
+          <div className="space-y-7">
+            <div>
+              <label htmlFor="catalog-search" className="mb-2 block text-sm font-semibold text-gray-700">
+                Search
+              </label>
+              <input
+                id="catalog-search"
+                type="search"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Filter datasets…"
+                className="w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm shadow-sm max-sm:text-base focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/40 sm:py-2"
+              />
+            </div>
+
+            <fieldset>
+              <legend className="mb-2 text-sm font-semibold text-gray-700">Ministry</legend>
+              <div className="space-y-1">
+                <button
+                  onClick={() => setDept('')}
+                  className={`flex w-full items-center justify-between rounded px-2 py-2 text-left text-sm sm:py-1.5 ${
+                    dept === '' ? 'bg-brand/10 font-medium text-brand' : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <span>All ministries</span>
+                  <span className="text-xs text-gray-400">{datasets.length}</span>
+                </button>
+                {departments.map((d) => (
+                  <button
+                    key={d.namespace}
+                    onClick={() => setDept(d.namespace)}
+                    className={`flex w-full items-center justify-between rounded px-2 py-2 text-left text-sm sm:py-1.5 ${
+                      dept === d.namespace ? 'bg-brand/10 font-medium text-brand' : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <span className="min-w-0 truncate">{d.title}</span>
+                    <span className="ml-2 shrink-0 text-xs text-gray-400">{d.count}</span>
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend className="mb-2 text-sm font-semibold text-gray-700">Theme</legend>
+              <div className="space-y-1">
+                <button
+                  onClick={() => setGroup('')}
+                  className={`flex w-full items-center justify-between rounded px-2 py-2 text-left text-sm sm:py-1.5 ${
+                    group === '' ? 'bg-brand/10 font-medium text-brand' : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <span>All themes</span>
+                  <span className="text-xs text-gray-400">{datasets.length}</span>
+                </button>
+                {themes.map((t) => (
+                  <button
+                    key={t.namespace}
+                    onClick={() => setGroup(t.namespace)}
+                    className={`flex w-full items-center justify-between rounded px-2 py-2 text-left text-sm sm:py-1.5 ${
+                      group === t.namespace ? 'bg-brand/10 font-medium text-brand' : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <span className="min-w-0 truncate">{t.title}</span>
+                    <span className="ml-2 shrink-0 text-xs text-gray-400">{t.count}</span>
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend className="mb-2 text-sm font-semibold text-gray-700">Format</legend>
+              <div className="flex flex-wrap gap-2">
+                {formats.map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => toggleFormat(f)}
+                    className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors sm:px-3 sm:py-1 sm:text-xs ${
+                      fmts.includes(f)
+                        ? 'border-brand bg-brand text-white'
+                        : 'border-gray-300 text-gray-600 hover:border-brand hover:text-brand'
+                    }`}
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+
+            {allTags.length > 0 && (
+              <fieldset>
+                <legend className="mb-2 text-sm font-semibold text-gray-700">Tags</legend>
+                <div className="flex max-h-52 flex-wrap gap-2 overflow-y-auto pr-1">
+                  {allTags.map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => toggleTag(t)}
+                      className={`rounded-full border px-3 py-1 text-sm font-medium transition-colors sm:text-xs ${
+                        tags.includes(t)
+                          ? 'border-brand bg-brand text-white'
+                          : 'border-gray-300 text-gray-600 hover:border-brand hover:text-brand'
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+            )}
+
+            {hasFilters && (
+              <button onClick={clearAll} className="text-sm font-medium text-brand hover:text-brand-dark">
+                Clear all filters
+              </button>
+            )}
+          </div>
+        </aside>
+
+        {/* Results */}
+        <div>
+          <p className="mb-4 text-sm text-gray-500">
+            {results.length} {results.length === 1 ? 'result' : 'results'}
+            {activeDeptTitle && <> in <span className="font-medium text-gray-700">{activeDeptTitle}</span></>}
+            {activeThemeTitle && <> in <span className="font-medium text-gray-700">{activeThemeTitle}</span></>}
+            {q && <> for &ldquo;<span className="font-medium text-gray-700">{q}</span>&rdquo;</>}
+          </p>
+
+          {results.length === 0 ? (
+            <div className="rounded-xl border-2 border-dashed border-gray-200 p-12 text-center text-gray-400">
+              <p className="text-lg font-medium">No datasets match your filters</p>
+              <button onClick={clearAll} className="mt-2 text-sm font-medium text-brand hover:text-brand-dark">
+                Clear filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid gap-5 sm:grid-cols-2">
+              {results.map((d) => (
+                <DatasetCard key={`${d.namespace}/${d.slug}`} dataset={d} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </>
-  );
-}
-
-function SearchPageContent() {
-  const { options } = useSearchState();
-  const {
-    theme: { styles },
-  } = useTheme();
-
-  return (
-    <Layout>
-      <div className="grid grid-rows-searchpage-hero">
-        <HeroSection title="Search" titleAccent={`${options.type}s`} />
-        <section className={`grid row-start-3 row-span-2 col-span-full pt-4 `}>
-          <div className={`custom-container bg-white ${styles.shadowMd}`}>
-            <DatasetSearchForm />
-          </div>
-        </section>
-      </div>
-      <div className="custom-container bg-white">
-        <article className="grid grid-cols-1 lg:grid-cols-9 gap-x-6 xl:gap-x-12 pt-[30px] pb-[30px]">
-          <div className="lg:col-span-3  lg:sticky top-3 h-fit">
-            <DatasetSearchFilters />
-          </div>
-          <div className="lg:col-span-6">
-            <ListOfDatasets />
-          </div>
-        </article>
-      </div>
-    </Layout>
-  );
+  )
 }

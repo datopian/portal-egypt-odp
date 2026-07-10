@@ -313,14 +313,14 @@ const AssistantMessageBody = memo(function AssistantMessageBody({
               isLocalLink(props.href) ? (
                 <Link
                   href={props.href || "/"}
-                  className="underline text-sky-700 hover:text-sky-800"
+                  className="underline text-brand hover:text-brand-dark"
                 >
                   {props.children}
                 </Link>
               ) : (
                 <a
                   {...props}
-                  className="underline text-sky-700 hover:text-sky-800"
+                  className="underline text-brand hover:text-brand-dark"
                   target="_blank"
                   rel="noopener noreferrer"
                 />
@@ -354,7 +354,7 @@ const AssistantMessageBody = memo(function AssistantMessageBody({
             td: ({ node, ...props }) => (
               <td className="border border-slate-300 px-2 py-1" {...props} />
             ),
-            code: ({ node, inline, className, children, ...props }) =>
+            code: ({ node, className, children, ...props }) =>
               isInlineCodeNode(className, children) ? (
                 <code
                   className="rounded bg-slate-200 px-1 py-0.5"
@@ -406,14 +406,14 @@ const AssistantMessageBody = memo(function AssistantMessageBody({
                   isLocalLink(props.href) ? (
                     <Link
                       href={props.href || "/"}
-                      className="underline text-sky-700 hover:text-sky-800"
+                      className="underline text-brand hover:text-brand-dark"
                     >
                       {props.children}
                     </Link>
                   ) : (
                     <a
                       {...props}
-                      className="underline text-sky-700 hover:text-sky-800"
+                      className="underline text-brand hover:text-brand-dark"
                       target="_blank"
                       rel="noopener noreferrer"
                     />
@@ -447,7 +447,7 @@ const AssistantMessageBody = memo(function AssistantMessageBody({
                 td: ({ node, ...props }) => (
                   <td className="border border-slate-300 px-2 py-1" {...props} />
                 ),
-                code: ({ node, inline, className, children, ...props }) =>
+                code: ({ node, className, children, ...props }) =>
                   isInlineCodeNode(className, children) ? (
                     <code
                       className="rounded bg-slate-200 px-1 py-0.5"
@@ -954,7 +954,7 @@ export default function QuerylessAssistant() {
     <>
       <button
         type="button"
-        className="fixed bottom-6 right-6 z-[60] inline-flex items-center gap-2 rounded-full bg-sky-600 px-4 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+        className="fixed bottom-6 right-6 z-[60] inline-flex items-center gap-2 rounded-full bg-brand px-4 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2"
         aria-label="Open AI assistant"
         onClick={() => setIsOpen(true)}
       >
@@ -1040,7 +1040,7 @@ export default function QuerylessAssistant() {
                                 : `${containsChartBlock ? "w-full max-w-full" : "max-w-[90%]"} rounded-2xl px-3 py-2 text-sm ${
                                     message.role === "assistant"
                                       ? "bg-slate-100 text-slate-800"
-                                      : "ml-auto bg-sky-600 text-white"
+                                      : "ml-auto bg-brand text-white"
                                   }`
                             }`}
                           >
@@ -1057,9 +1057,9 @@ export default function QuerylessAssistant() {
                       <div className="max-w-[90%] rounded-2xl bg-slate-100 px-3 py-2 text-sm text-slate-600">
                         <div className="flex items-center gap-2">
                           <span className="inline-flex items-center gap-1" aria-hidden="true">
-                            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-sky-500 [animation-delay:-0.2s]" />
-                            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-sky-500 [animation-delay:-0.1s]" />
-                            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-sky-500" />
+                            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-brand [animation-delay:-0.2s]" />
+                            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-brand [animation-delay:-0.1s]" />
+                            <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-brand" />
                           </span>
                           <span>Thinking...</span>
                         </div>
@@ -1103,13 +1103,13 @@ export default function QuerylessAssistant() {
                           }
                         }}
                         placeholder="Ask about this page or your data..."
-                        className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500"
+                        className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand"
                       />
                       <button
                         type="button"
                         onClick={() => void sendMessage()}
                         disabled={isSending || !input.trim() || Boolean(rateLimitMessage)}
-                        className="rounded-md bg-sky-600 px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+                        className="rounded-md bg-brand px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         Send
                       </button>
