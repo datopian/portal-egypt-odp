@@ -20,6 +20,12 @@ module.exports = {
           green: '#c6a15b', // soft gold — accent (was green)
           red: '#ce1126', // Egyptian flag red — CTAs, highlights
         },
+        // Accent scale (tints of brand red) used by the ported responsiveGrid table.
+        accent: {
+          DEFAULT: '#9e1b32',
+          50: '#faf4f5',
+          100: '#f5e8ea',
+        },
       },
     },
   },

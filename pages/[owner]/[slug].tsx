@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import type { GetServerSideProps } from 'next'
-import { Table } from '../../components/Table'
+import ResponsiveGridWrapper from '../../components/responsiveGrid'
 import Badge, { formatTone } from '../../components/Badge'
 import { ckan, DMS } from '../../lib/ckan'
 
@@ -141,7 +141,7 @@ export default function DatasetPage({ dataset }: { dataset: DatasetView }) {
                   </div>
                   <div className="p-5">
                     {r.kind === 'table' && r.url ? (
-                      <Table url={r.url} />
+                      <ResponsiveGridWrapper dataUrl={r.url} />
                     ) : r.kind === 'pdf' && r.url ? (
                       <object data={r.url} type="application/pdf" className="h-[640px] w-full rounded-md border border-gray-200">
                         <p className="text-sm text-gray-500">
