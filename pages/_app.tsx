@@ -17,7 +17,7 @@ const display = Space_Grotesk({
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <div className={`${inter.variable} ${display.variable} font-sans`}>
+    <div id="app-shell" className={`${inter.variable} ${display.variable} font-sans`}>
       <Layout>
         <Component {...pageProps} />
       </Layout>

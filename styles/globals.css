@@ -9,3 +9,16 @@ h2 {
   font-family: var(--font-display);
   letter-spacing: -0.02em;
 }
+
+/* Queryless drawer: when open (body.queryless-drawer-open, toggled by the
+   assistant), shrink the app shell so page content is pushed left instead of
+   being covered. Only on lg+ where the 560px drawer leaves room; on smaller
+   screens the drawer is full-width and overlays as before. */
+#app-shell {
+  transition: margin-right 0.3s ease;
+}
+@media (min-width: 1024px) {
+  body.queryless-drawer-open #app-shell {
+    margin-right: 560px;
+  }
+}
