@@ -1,229 +1,173 @@
-# PortalJS Frontend Starter
+# PortalJS Catalog Template (dynamic routes)
 
-<div align="center">
+A template variant for portals with **many datasets**. Instead of one page file per
+dataset, the catalog is driven by a single manifest (`datasets.json`) and rendered by a
+dynamic route (`pages/[owner]/[slug].tsx` + `getStaticPaths`). Adding a dataset is one
+JSON entry plus a data file — no new page.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/datopian/portaljs-frontend-starter)
+## The three surfaces
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Next.js 13+](https://img.shields.io/badge/Next.js-13%2B-black?logo=next.js&logoColor=white)](https://nextjs.org/) [![GitHub Stars](https://img.shields.io/github/stars/datopian/portaljs?style=social)](https://github.com/datopian/portaljs/stargazers)
+| Surface | Route | File | What it is |
+|---|---|---|---|
+| Home | `/` | `pages/index.tsx` | Landing page: hero + search CTA + suggested-query chips |
+| Catalog / search | `/search` | `pages/search.tsx` | The dataset list with client-side full-text filtering |
+| Dataset showcase | `/@<namespace>/<slug>` | `pages/[owner]/[slug].tsx` | One dataset: metadata, data preview, download/API, views |
 
-**A modern, customizable frontend template for building high-performance CKAN-based data portals**
+The home page's search box and chips navigate to `/search?q=…`; each search result links
+to its showcase at `/@<namespace>/<slug>`.
 
-Powered by **[Next.js](https://nextjs.org)**, **[React](https://react.dev/)**, and **[Tailwind CSS](https://tailwindcss.com/)**
+## When to use this vs `portaljs-template`
 
-**[🚀 Live Demo](https://demo.portaljs.com/) • [📖 Documentation](https://portaljs.com/docs) • [☁️ PortalJS Cloud](https://cloud.portaljs.com/) • [🌐 Website](https://portaljs.com/)**
+| | `portaljs-template` | `portaljs-catalog` (this) |
+|---|---|---|
+| Dataset pages | one `.tsx` file per dataset | one dynamic `[owner]/[slug].tsx` for all |
+| Registration | hardcoded array in `index.tsx` | `datasets.json` manifest |
+| Best for | a handful of datasets | dozens to hundreds |
 
-</div>
+Both ship the same lightweight `components/Table.tsx`, Tailwind setup, and Next 14 config.
 
----
-
-## Overview
-
-This is the official frontend template used by [PortalJS Cloud](https://cloud.portaljs.com) — a fully managed data portal service built on top of CKAN and Next.js.
-
-Use it to:
-
-- Build decoupled CKAN frontends with modern tools (Next.js, React, TailwindCSS)
-- Customize dataset views, branding, and layouts
-- Deploy on Vercel, Netlify, Cloudflare Pages or your own infra
-
-## ✨ Features
-
-- **Modern UI** - Clean, responsive design with Tailwind CSS
-- **High Performance** - Built on Next.js 13+ with SSR/SSG
-- **CKAN Integration** - Seamless data fetching via @portaljs/ckan
-- **TypeScript** - Full type safety and better DX
-- **Easy Customizatio**n - Simple theme system and component styling
-- **Mobile-First** - Responsive design for all devices
-- **Deploy Ready** - One-click deployment to Vercel
-
-## Getting started
-
-### Option 1: PortalJS Cloud
-
-PortalJS Cloud uses this template for creating new portals. If you want to quickly get started for free, follow the steps:
-
-1. **Sign up** at <https://cloud.portaljs.com>
-2. **Create portal** → PortalJS Cloud will auto-generate a GitHub repository for your portal (based on this template) and deploy it automatically
-3. Find the repo link in your PortalJS Cloud dashboard
-4. **Customize** your portal via pull requests — or let us take care of it by reaching out at portaljs@datopian.com
-
-### Option 2: Self-Hosted / Standalone
-
-> [!note]
-> In standalone mode, you are going to need your own dedicated CKAN instance.
-
-In order to use this repository in standalone mode (i.e. without PortalJS Cloud), click on the "Use this template" button on the top right corner to replicate this code to a new repo.
-
-Then, you can start customizing it locally by following the development instructions bellow, and/or deploy it somewhere such as on Vercel.
-
-### Development
-
-1) Clone this repository
-
-2) Install the dependencies with `npm i`
-
-3) Create a new `.env` file with:
+## Running
 
 ```bash
-# This is the URL of the CKAN instance. Use the example value if you are using PortalJS Cloud.
-NEXT_PUBLIC_DMS=https://api.cloud.portaljs.com/@my-portal-main-org-name
-
-# Optional Queryless AI assistant integration
-# Set to true to display the floating AI button + right drawer chat
-NEXT_PUBLIC_QUERYLESS_ENABLED=false
-
-# Optional internal API route path used by the chat widget
-NEXT_PUBLIC_QUERYLESS_API_ROUTE=/api/queryless-chat
-
-# Server-side Queryless API config (keep these non-public)
-QUERYLESS_URL=
-QUERYLESS_TOKEN=
-QUERYLESS_MODEL=agent:your-agent-id
+cd examples/portaljs-catalog
+npm install
+npm run dev
 ```
 
-4) Run `npm run dev` to start the development server
+## Adding a dataset
 
-5) Access `http://localhost:3000` in your browser
+1. Drop the file in `public/data/` (e.g. `public/data/my-data.csv`).
+2. Append an entry to `datasets.json`:
 
-## Customization
-
-This template was developed with Next.js/React and TailwindCSS.
-
-In order to learn more about how it can be customized, check the following documentations:
-
-- https://react.dev/
-- https://nextjs.org/docs
-- https://v3.tailwindcss.com/docs/installation
-
-### Quick Customizations
-
-#### Logo Customization
-
-```tsx
-// components/_shared/PortalDefaultLogo.tsx
-export default function PortalDefaultLogo() {
-  return (
-    <Link href="/">
-      <img src="/your-logo.png" alt="Your Portal" height={55} />
-    </Link>
-  );
+```json
+{
+  "slug": "my-data",
+  "namespace": "reference",
+  "name": "My Data",
+  "description": "One-line description.",
+  "file": "my-data.csv",
+  "format": "csv"
 }
 ```
 
-#### Footer Links
+That's it. `getStaticPaths` picks up the new `(namespace, slug)` pair at build time and
+`/@reference/my-data` renders automatically. CSV and TSV files are previewed in an
+interactive `<Table />`; other formats (`json`, `geojson`) show a download link.
 
-```tsx
-// components/_shared/Footer.tsx - Update navigation object
-const navigation = {
-  about: [
-    { name: "About Us", href: "/about" },
-    { name: "Contact", href: "/contact" },
-  ],
-  useful: [
-    { name: "Datasets", href: "/search" },
-    { name: "Organizations", href: "/organizations" },
-  ],
-  social: [
-    { name: "twitter", href: "https://twitter.com/yourhandle" },
-    { name: "email", href: "mailto:contact@yoursite.com" },
-  ],
-};
+The bundled sample files under `public/data/` are the small reference data that ships
+inline so the portal runs offline. For **large data**, see below.
+
+## Large data (Git LFS → R2)
+
+Committing big files to `public/data/` doesn't scale — git bloats and the static export
+ships every byte. So the template wires large data through **Git LFS → Cloudflare R2**
+(epic po-g9y):
+
+- **`.gitattributes`** routes added data through Git LFS **per file** — it ships minimal
+  and `/portaljs-add-dataset` appends a path-specific entry for each file it sends to R2
+  (format-agnostic, any binary). The bundled `public/data/` sample is a fenced exception —
+  it stays inline so the portal runs offline with zero credentials.
+- **`.lfsconfig`** points LFS at the [Giftless](../../giftless) endpoint, which streams
+  the bytes to R2 and leaves a tiny pointer in git. It carries **no credentials** — auth
+  is local-only (see `giftless/README.md`).
+- **Serving:** the browser fetches the bytes straight from R2. A dataset whose data lives
+  in R2 sets its `resource.path` (or `file`) to the **absolute R2 URL** — `resourceUrl()`
+  in `lib/datasets.ts` passes absolute URLs through unchanged, so no bytes are copied into
+  the repo or the static export. R2 CORS + range headers are configured and verified
+  (`giftless/r2-cors.json`), which also unlocks the DuckDB-Wasm range-query tier.
+
+- **Deploy:** `/portaljs-deploy` serves large data from R2 too — it never pulls LFS bytes into
+  the static export and gates the upload on `npm run check-export` (`scripts/check-export.mjs`),
+  which fails on LFS pointer leaks or oversized files in `out/`. The export stays lean; the
+  bytes stay in R2.
+
+`/portaljs-add-dataset` automates this routing: local files → R2 via LFS by default;
+remote URLs → recorded as-is (passthrough) by default, or adopted into R2 on request.
+Inline storage is a fenced exception for bundled sample data.
+
+## Query tier — query large data without downloading it
+
+Once data is on R2, the showcase can query it **in place** instead of downloading
+the whole file. Convert CSV/TSV to **Parquet** and the showcase reads it with
+DuckDB-Wasm over HTTP range requests — projection + predicate pushdown mean a
+browser fetches only the row groups and columns a query touches, so a phone can
+query a multi-GB file by pulling a few MB:
+
+```bash
+scripts/csv-to-parquet.sh public/data/orders.csv orders.parquet
+# version with Git LFS (→ R2), then point the resource at the R2 URL with format: "parquet"
 ```
 
-#### Homepage Content
+A Parquet resource always renders the in-browser SQL explorer; CSV/TSV opt in via
+`DATA_QUERY = 'duckdb'` in `lib/datasets.ts`. The engine runs entirely client-side
+(no server, no catalog DB) and loads only when a query view mounts. For data too
+big for the browser, the same `DataQuery` seam can route to an edge Worker or
+MotherDuck — see [`lib/query/README.md`](lib/query/README.md) for the contract and
+device-tier / fallback guidance.
 
-```tsx
-// pages/index.tsx - Update title and description
-<Head>
-  <title>Your Portal Name</title>
-  <meta name="description" content="Your portal description" />
-</Head>
+## Why dataset URLs start with `@`
+
+Dataset showcase URLs are namespaced under `@` (`/@<owner-or-theme>/<dataset>`) so they
+**never collide** with regular content/static pages (which never start with `@`). The
+dataset route is a 2-segment dynamic route (`pages/[owner]/[slug].tsx`) resolved entirely
+by static generation from the manifest — so **content/static pages should not use
+2-segment non-`@` paths**, or they would clash with the dataset route's matcher.
+
+A portal uses **exactly one** namespace mode, set via `NAMESPACE_TYPE` in
+`lib/datasets.ts`:
+
+- **`'theme'`** — a single-publisher portal whose datasets are grouped by subject
+  (e.g. `@reference/country-codes`). The showcase labels the namespace "Theme".
+- **`'owner'`** — a multi-publisher portal whose datasets are grouped by who published
+  them (e.g. `@worldbank/country-codes`). The showcase labels the namespace "Owner".
+
+Picking one mode keeps every `(@namespace, slug)` pair unique. The URL shape is
+`/@<namespace>/<slug>` regardless of which mode is chosen — `NAMESPACE_TYPE` only changes
+the metadata label on the showcase.
+
+## Placeholder tokens
+
+`/portaljs-new-portal` replaces these at scaffold time:
+
+| Token | Replaced with |
+|-------|--------------|
+| `City of Kyle Open Data` | Human-readable portal name |
+| `city-of-kyle-open-data` | URL-safe slug |
+| `Open data and financial transparency for the City of Kyle, Texas.` | One-sentence portal description |
+
+## Branding (placeholder — swap it)
+
+The template ships with the **PortalJS** mark as a clearly-swappable placeholder so a fresh
+portal looks intentional before you customize it: a favicon, a navbar logo (with a tasteful
+spin on hover that respects `prefers-reduced-motion`), and social/PWA icons.
+
+To make it your own, replace the icon files in `public/` with your own brand marks — the
+links in `pages/_document.tsx` and the logo in `components/Navbar.tsx` then need no changes:
+
+| File | Used for |
+|------|----------|
+| `public/icon.svg` | navbar logo + modern-browser favicon (scalable) |
+| `public/favicon.ico` | classic browser-tab favicon (16/32/48) |
+| `public/apple-touch-icon.png` | iOS home-screen icon (180×180) |
+| `public/icon-512.png` | PWA / social card (512×512) |
+
+The navbar's brand text uses the same `City of Kyle Open Data` token, so it is already set to your
+portal name after scaffolding.
+
+## Structure
+
 ```
-
-##### Dataset Search
-
-```tsx
-// lib/queries/dataset.ts - Add custom facet fields
-const facetFields = [
-  "groups",
-  "organization",
-  "res_format",
-  "tags",           // Enable tags
-  "license_id",     // Add license filtering
-]
+datasets.json              — manifest: the single source of truth for the catalog
+lib/datasets.ts            — typed loader (getDatasets / getDataset / datasetHref / NAMESPACE_TYPE)
+pages/index.tsx            — landing page: hero + search CTA + suggested chips
+pages/search.tsx           — searchable dataset list, reads manifest via getStaticProps
+pages/[owner]/[slug].tsx   — dynamic dataset showcase (/@<namespace>/<slug>)
+pages/_app.tsx             — renders the Navbar on every page
+pages/_document.tsx        — favicon / icon links + default meta description
+public/data/               — bundled SAMPLE data (inline, offline-friendly)
+public/{icon.svg,favicon.ico,apple-touch-icon.png,icon-512.png} — branding (placeholder)
+components/Navbar.tsx       — site navbar: logo (hover-spin) + name + link to /search
+components/Table.tsx       — interactive table (search, sort, paginate)
+.gitattributes             — routes large data formats through Git LFS (→ R2)
+.lfsconfig                 — Git LFS endpoint (Giftless → R2); no credentials
 ```
-
-#### Theme Components
-
-```tsx
-// themes/default/index.tsx - Replace with custom components
-const DefaultTheme = {
-  header: CustomHeader,
-  footer: CustomFooter,
-  layout: DefaultThemeLayout,
-};
-```
-
----
-
-## Tech Stack
-
-- **Framework:** [Next.js 13+](https://nextjs.org/) with TypeScript
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **Data:** [CKAN API](https://docs.ckan.org/en/2.10/api/) via [@portaljs/ckan](https://www.npmjs.com/package/@portaljs/ckan)
-- **Deployment:** [Vercel](https://vercel.com/)
-
-## Deployment
-
-### Vercel (Recommended)
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fdatopian%2Fportaljs-frontend-starter&env=NEXT_PUBLIC_DMS&envDescription=DMS%20endpoint%2C%20e.g.%2C%20a%20CKAN%20instance%20URL.%20For%20testing%20purposes%2C%20you%20can%20use%20https%3A%2F%2Fapi.cloud.portaljs.com%2F&project-name=my-portaljs-app&repository-name=my-portaljs-app)
-
-1. Push your repo to GitHub
-2. Connect it on [vercel.com](https://vercel.com/)
-3. Add environment variables
-4. Deploy! 🎉
-
-#### Other Platforms
-
-This template works on:
-- **Netlify** - Connect your GitHub repo
-- **Cloudflare Pages** - Import from Git
-- **Your server** - `npm run build && npm start`
-
-## Contributing
-
-We welcome contributions! Here's how to get started:
-
-1. **Fork** this repository
-2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
-3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
-4. **Push** to the branch (`git push origin feature/amazing-feature`)
-5. **Open** a Pull Request
-
-## 📄 License
-
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
-
-## Need help or advanced features?
-
-This template covers basic portal functionality. For complex customizations, integrations, or enterprise features, [contact our team](mailto:portaljs@datopian.com) for professional services.
-
-- **Custom Design** - Tailored branding and UI/UX
-- **Advanced Features** - Custom integrations and functionality
-- **Enterprise Support** - Dedicated support and SLA
-- **Migration** - Help moving from existing portals
-
----
-
-<div align="center">
-
-**Built with ❤️ by [Datopian](https://datopian.com/)**
-
-Let’s build better data portals together 🚀
-
-**⭐️ [Star PortalJS](https://github.com/datopian/portaljs) • [🐦 Follow us](https://www.linkedin.com/company/10340373) • [💬 Contact](mailto:portaljs@datopian.com)**
-
-**[📚 Docs](https://portaljs.com/docs) • [ 🐛 Report a bug or suggest an idea](https://github.com/datopian/portaljs/issues)**
-
-</div>
