@@ -1,8 +1,14 @@
 // Minimal server-side CKAN client — plain fetch, no dependency, no React coupling.
 // Used ONLY in getStaticProps/getStaticPaths, so it never reaches the browser bundle.
 
-// CKAN backend base URL. Override at deploy time with the DMS env var.
-export const DMS = (process.env.DMS || 'https://egypt-odp.portaljs.com').replace(/\/+$/, '')
+// CKAN backend base URL. Set DMS (server) at deploy time; falls back to the
+// public NEXT_PUBLIC_DMS so a single env var is enough, then to the Egypt ODP
+// CKAN API base as a last resort.
+export const DMS = (
+  process.env.DMS ||
+  process.env.NEXT_PUBLIC_DMS ||
+  'https://api.cloud.portaljs.com/@egypt-odp'
+).replace(/\/+$/, '')
 
 // Filters baked in by /portaljs-connect-ckan. Empty array = no filter.
 export const ORG_FILTER: string[] = []
