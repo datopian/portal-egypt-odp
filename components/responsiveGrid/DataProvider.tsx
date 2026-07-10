@@ -84,7 +84,7 @@ export const DataStateProvider = ({
     if (debounceTimeoutRef.current) clearTimeout(debounceTimeoutRef.current);
     debounceTimeoutRef.current = setTimeout(() => {
       setGlobalFilter(value);
-    }, 1000);
+    }, 300);
   };
 
   const toggleSettingsDropdown = () => {
