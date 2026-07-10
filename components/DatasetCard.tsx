@@ -57,15 +57,15 @@ export default function DatasetCard({ dataset }: { dataset: Card }) {
 
       {/* tags */}
       {dataset.tags.length > 0 && (
-        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+        <div className="mt-2 flex flex-wrap items-center gap-1.5" title={dataset.tags.join(', ')}>
           <HashtagIcon className="h-3.5 w-3.5 text-gray-300" />
-          {dataset.tags.slice(0, 5).map((t) => (
+          {dataset.tags.slice(0, 3).map((t) => (
             <span key={t} className="rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
               {t}
             </span>
           ))}
-          {dataset.tags.length > 5 && (
-            <span className="text-xs text-gray-400">+{dataset.tags.length - 5}</span>
+          {dataset.tags.length > 3 && (
+            <span className="text-xs text-gray-400">+{dataset.tags.length - 3}</span>
           )}
         </div>
       )}
