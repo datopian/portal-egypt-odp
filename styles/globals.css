@@ -22,3 +22,13 @@ h2 {
     margin-right: 560px;
   }
 }
+
+/* Drawer slides in from the right, in step with the content shift above. */
+@keyframes queryless-enter {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}

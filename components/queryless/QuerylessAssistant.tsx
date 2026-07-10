@@ -968,7 +968,7 @@ export default function QuerylessAssistant() {
             role="dialog"
             aria-modal="false"
             aria-label="AI assistant"
-            className="fixed right-0 top-0 z-[70] h-screen w-full max-w-[560px] border-l border-slate-200 bg-white shadow-2xl"
+            className="fixed right-0 top-0 z-[70] h-screen w-full max-w-[560px] border-l border-slate-200 bg-white shadow-2xl motion-safe:animate-[queryless-enter_0.3s_ease-out]"
           >
             <div className="flex h-full flex-col">
               <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
