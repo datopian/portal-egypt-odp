@@ -23,6 +23,25 @@ h2 {
   }
 }
 
+/* rc-slider (numeric column range filter) recolored from its default blue to
+   the brand red. */
+.rc-slider-track {
+  background-color: #9e1b32;
+}
+.rc-slider-handle {
+  border-color: #9e1b32;
+  opacity: 1;
+}
+.rc-slider-handle:hover,
+.rc-slider-handle-click-focused:focus {
+  border-color: #6b1020;
+}
+.rc-slider-handle:active,
+.rc-slider-handle-dragging.rc-slider-handle-dragging.rc-slider-handle-dragging {
+  border-color: #9e1b32;
+  box-shadow: 0 0 0 5px rgba(158, 27, 50, 0.2);
+}
+
 /* Drawer slides in from the right, in step with the content shift above. */
 @keyframes queryless-enter {
   from {
