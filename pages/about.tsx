@@ -35,17 +35,17 @@ export default function About() {
       </Head>
 
       {/* Header band */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-brand via-brand to-brand-dark text-white">
-        <DotGrid opacity={0.1} gap={24} />
-        <EgyptWatermark className="-right-12 -top-10 h-[180%] w-auto" opacity={0.07} />
+      <div className="relative overflow-hidden bg-gradient-to-br from-sand-50 via-sand-100 to-sand-200 text-gray-900">
+        <DotGrid color="#1c1c1c" opacity={0.04} gap={24} />
+        <EgyptWatermark className="-right-12 -top-10 h-[180%] w-auto" fill="#9e1b32" opacity={0.05} />
         <div className="relative mx-auto max-w-4xl px-4 py-16">
-          <nav className="mb-3 text-sm text-white/70">
-            <Link href="/" className="hover:text-white">Home</Link>
+          <nav className="mb-3 text-sm text-gray-500">
+            <Link href="/" className="hover:text-brand">Home</Link>
             <span className="mx-2">/</span>
             <span>About</span>
           </nav>
-          <h1 className="text-4xl font-bold">Open government, by default</h1>
-          <p className="mt-4 max-w-2xl text-lg text-white/80">
+          <h1 className="text-4xl font-bold text-gray-900">Open government, by default</h1>
+          <p className="mt-4 max-w-2xl text-lg text-gray-600">
             The Egypt Open Data Portal is the national gateway to open government data —
             bringing datasets from across Egyptian ministries into one searchable, open,
             and downloadable home.

@@ -177,12 +177,12 @@ export default function Home({ total, departments, themeCount, recent, hero }: P
 
       {/* Open-government callout */}
       <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand via-brand to-brand-dark px-8 py-12 text-white shadow-xl shadow-brand/20 sm:px-12">
-          <DotGrid opacity={0.1} gap={24} />
-          <EgyptWatermark className="-right-10 -top-12 h-[170%] w-auto" opacity={0.07} />
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-sand-50 via-sand-100 to-sand-200 px-8 py-12 text-gray-900 shadow-xl shadow-black/5 ring-1 ring-sand-300/60 sm:px-12">
+          <DotGrid color="#1c1c1c" opacity={0.04} gap={24} />
+          <EgyptWatermark className="-right-10 -top-12 h-[170%] w-auto" fill="#9e1b32" opacity={0.05} />
           <div className="relative max-w-2xl">
-            <h2 className="text-2xl font-bold">Open data for an open government</h2>
-            <p className="mt-3 text-white/80">
+            <h2 className="text-2xl font-bold text-gray-900">Open data for an open government</h2>
+            <p className="mt-3 text-gray-600">
               Datasets from across Egyptian ministries — environment, finance, health and more —
               published as open, downloadable records, served live and answerable in both Arabic
               and English.
@@ -190,13 +190,13 @@ export default function Home({ total, departments, themeCount, recent, hero }: P
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
                 href="/search"
-                className="rounded-md bg-white px-5 py-2.5 text-base font-semibold text-brand transition-colors hover:bg-white/90 sm:text-sm"
+                className="rounded-md bg-brand px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-brand-dark sm:text-sm"
               >
                 Explore datasets
               </Link>
               <Link
                 href="/departments"
-                className="rounded-md border border-white/40 px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-white/10 sm:text-sm"
+                className="rounded-md border border-gray-300 px-5 py-2.5 text-base font-semibold text-gray-700 transition-colors hover:border-brand hover:text-brand sm:text-sm"
               >
                 Browse ministries
               </Link>

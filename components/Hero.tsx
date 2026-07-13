@@ -29,26 +29,26 @@ export default function Hero({
   chartSourceName?: string
 }) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-brand via-brand to-brand-dark text-white">
-      {/* layered background: brand glows + dotted grid + pyramids watermark */}
+    <section className="relative overflow-hidden bg-gradient-to-br from-sand-50 via-sand-100 to-sand-200 text-gray-900">
+      {/* layered background: soft warm glow + dotted grid + pyramids watermark */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(50% 50% at 92% 4%, rgba(56,132,222,0.12) 0%, rgba(23,58,100,0) 50%), radial-gradient(40% 55% at 3% 99%, rgba(192,31,65,0.07) 0%, rgba(23,58,100,0) 50%)',
+            'radial-gradient(60% 60% at 88% 8%, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 60%), radial-gradient(45% 55% at 3% 99%, rgba(158,27,50,0.05) 0%, rgba(158,27,50,0) 55%)',
         }}
       />
-      <DotGrid opacity={0.1} gap={24} />
-      <EgyptWatermark className="-bottom-16 -left-16 h-[150%] w-auto" opacity={0.06} />
+      <DotGrid color="#1c1c1c" opacity={0.04} gap={24} />
+      <EgyptWatermark className="-bottom-16 -left-16 h-[150%] w-auto" fill="#9e1b32" opacity={0.05} />
       <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 lg:grid-cols-2 lg:py-24">
         {/* Left: copy + search */}
         <div>
-          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-white/70">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-500">
             Arab Republic of Egypt
           </p>
-          <h1 className="text-4xl font-bold leading-tight sm:text-5xl">{title}</h1>
-          <p className="mt-4 max-w-md text-lg text-white/80">{description}</p>
+          <h1 className="text-4xl font-bold leading-tight text-gray-900 sm:text-5xl">{title}</h1>
+          <p className="mt-4 max-w-md text-lg text-gray-600">{description}</p>
 
           <div className="mt-7 max-w-md">
             <SearchBar placeholder="Search datasets" />
@@ -59,7 +59,7 @@ export default function Hero({
               <Link
                 key={q}
                 href={`/search?q=${encodeURIComponent(q)}`}
-                className="rounded-full border border-white/25 px-3.5 py-1.5 text-sm text-white/85 transition-colors hover:border-white hover:bg-white/10 sm:px-3 sm:py-1"
+                className="rounded-full border border-gray-300 bg-white/50 px-3.5 py-1.5 text-sm text-gray-700 transition-colors hover:border-gray-400 hover:bg-white sm:px-3 sm:py-1"
               >
                 {q}
               </Link>
@@ -69,24 +69,24 @@ export default function Hero({
           <dl className="mt-9 flex flex-wrap gap-x-8 gap-y-4 sm:gap-x-10">
             {stats.map((s) => (
               <div key={s.label}>
-                <dt className="text-3xl font-bold sm:text-2xl">{s.value}</dt>
-                <dd className="text-base text-white/70 sm:text-sm">{s.label}</dd>
+                <dt className="text-3xl font-bold text-gray-900 sm:text-2xl">{s.value}</dt>
+                <dd className="text-base text-gray-500 sm:text-sm">{s.label}</dd>
               </div>
             ))}
           </dl>
         </div>
 
         {/* Right: featured chart */}
-        <div className="rounded-2xl bg-gradient-to-b from-white/10 to-white/[0.03] p-5 shadow-2xl shadow-black/20 ring-1 ring-white/15 backdrop-blur-sm">
+        <div className="rounded-2xl bg-white p-5 shadow-2xl shadow-black/10 ring-1 ring-gray-200/70">
           <div className="mb-2 flex items-baseline justify-between gap-2">
-            <h2 className="text-base font-semibold text-white">{chartTitle}</h2>
-            {chartSubtitle && <span className="text-xs text-white/60">{chartSubtitle}</span>}
+            <h2 className="text-base font-semibold text-gray-900">{chartTitle}</h2>
+            {chartSubtitle && <span className="text-xs text-gray-500">{chartSubtitle}</span>}
           </div>
-          <BudgetChart {...chart} />
+          <BudgetChart {...chart} theme="light" />
           {chartSourceHref && chartSourceName && (
             <Link
               href={chartSourceHref}
-              className="mt-2 inline-block text-sm font-medium text-white/80 underline decoration-white/40 underline-offset-2 hover:text-white"
+              className="mt-2 inline-block text-sm font-medium text-brand underline decoration-brand/40 underline-offset-2 hover:text-brand-dark"
             >
               Source: {chartSourceName} &rarr;
             </Link>

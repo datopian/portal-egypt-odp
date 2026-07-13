@@ -27,7 +27,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-30 bg-white shadow-sm">
       {/* Utility strip */}
-      <div className="bg-brand text-white">
+      <div className="bg-ink text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-1.5 text-xs">
           <span className="min-w-0 truncate text-white/80">
             A{' '}

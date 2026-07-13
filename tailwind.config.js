@@ -26,6 +26,18 @@ module.exports = {
           50: '#faf4f5',
           100: '#f5e8ea',
         },
+        // Warm sand/beige — hero and light section backgrounds (Egyptian desert tone).
+        sand: {
+          50: '#f7f3ec',
+          100: '#f0ebe0',
+          200: '#e7ddcc',
+          300: '#ddd0b9',
+        },
+        // Near-black ink — top utility strip, footer, and high-contrast dark panels.
+        ink: {
+          DEFAULT: '#1c1c1c',
+          light: '#2c2c2c',
+        },
       },
     },
   },

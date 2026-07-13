@@ -4,7 +4,7 @@ import { DotGrid } from './graphics'
 // Civic site footer, rendered on every page via Layout.
 export default function Footer() {
   return (
-    <footer className="relative mt-auto overflow-hidden border-t border-gray-200 bg-gradient-to-br from-brand to-brand-dark text-white/80">
+    <footer className="relative mt-auto overflow-hidden border-t border-gray-200 bg-gradient-to-br from-ink to-ink-light text-white/80">
       <DotGrid opacity={0.07} gap={24} />
       <div className="relative mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div className="sm:col-span-2 lg:col-span-2">
